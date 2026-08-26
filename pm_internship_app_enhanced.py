@@ -727,7 +727,7 @@ def main():
     st.markdown("---")
     st.markdown(f"""
     <div style="text-align: center; color: #666; padding: 20px;">
-        <p> <strong>{translate('PM Internship Scheme - Empowering India\'s Youth')}</strong></p>
+        <p> <strong>{translate("PM Internship Scheme - Empowering India's Youth")}</strong></p>
         <p><em>{translate('Making internship discovery simple for everyone!')}</em></p>
     </div>
     """, unsafe_allow_html=True)
