@@ -1,5 +1,6 @@
 import streamlit as st
 import urllib.parse
+import os
 import pandas as pd
 from datetime import datetime
 import pymongo
@@ -12,16 +13,21 @@ from deep_translator import GoogleTranslator
 from translations import TRANSLATIONS  # Static UI translations
 
 # ---------------- MongoDB Config ----------------
-MONGO_URI = "mongodb+srv://bhuvanasaichappa22_db_user:5YDDctnDz02wer5K@cluster0.awalbog.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-client = pymongo.MongoClient(MONGO_URI)
-db = client["InternshipPortal"]
-users_collection = db["users"]
+MONGO_URI = os.getenv("MONGO_URI", "")
+users_collection = None
+if MONGO_URI:
+    try:
+        client = pymongo.MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
+        client.admin.command("ping")
+        users_collection = client["InternshipPortal"]["users"]
+    except pymongo.errors.PyMongoError:
+        users_collection = None
 
 # --- Gmail SMTP Config ---
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
-SMTP_USER = "pminternshiplmtd.gov.in@gmail.com"
-SMTP_PASSWORD = "pqcjbsovswsbabml"
+SMTP_USER = os.getenv("SMTP_USER", "")
+SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "")
 
 # Supported languages
 LANGUAGES = list(TRANSLATIONS.keys())
@@ -31,8 +37,8 @@ if 'target_language' not in st.session_state:
     st.session_state['target_language'] = 'English'
 
 # --- TEXTBEE SMS FUNCTION ---
-TEXTBEE_API_KEY = "9223d5ba-9762-41c5-b8e7-69c225be999e"  # Set to your actual TextBee API key
-TEXTBEE_DEVICE_ID = "68d14f2e3d44c97447b1541c"  # Set to your actual TextBee device ID
+TEXTBEE_API_KEY = os.getenv("TEXTBEE_API_KEY", "")
+TEXTBEE_DEVICE_ID = os.getenv("TEXTBEE_DEVICE_ID", "")
 BASE_URL = 'https://api.textbee.dev/api/v1'
 
 def format_mobile_number(mobile):
@@ -507,6 +513,9 @@ def render_dashboard(internships, it_sector_df):
 # ---------------- Auth UI ----------------
 def show_auth_ui():
     st.title("PM Internship Scheme")
+    if users_collection is None:
+        st.error("Authentication database is unavailable. Set MONGO_URI and try again.")
+        return
     if 'auth_mode' not in st.session_state:
         st.session_state['auth_mode'] = 'login'
     if 'authenticated' not in st.session_state:
