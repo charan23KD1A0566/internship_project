@@ -293,12 +293,13 @@ def show_application_form(internship):
                 </div>
                 """, unsafe_allow_html=True)
 
-                st.markdown(f"### 🚀 {translate(\"What's Next?\")}")
-                st.info(
-                    f"{translate(\"📩 Confirmation Email: You'll receive a confirmation email shortly.\")}  \n"
-                    f"{translate('⏱ Review Process: Applications are typically reviewed within 5-7 business days.')}  \n"
-                    f"{translate('📱 Status Updates: Check your email and phone for updates from the company.')}  \n"
-                    f"{translate(\"🔄 Follow Up: You can follow up after 1 week if you don't hear back.\")} ")
+                st.markdown("### 🚀 " + translate("What's Next?"))
+                st.info("  \n".join([
+                    translate("📩 Confirmation Email: You'll receive a confirmation email shortly."),
+                    translate('⏱ Review Process: Applications are typically reviewed within 5-7 business days.'),
+                    translate('📱 Status Updates: Check your email and phone for updates from the company.'),
+                    translate("🔄 Follow Up: You can follow up after 1 week if you don't hear back.")
+                ]))
 
                 application_data = {
                     'name': applicant_name,
